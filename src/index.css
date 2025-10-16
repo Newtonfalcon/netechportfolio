@@ -1,0 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* optional: improve font smoothness */
+html, body {
+  scroll-behavior: smooth;
+}
