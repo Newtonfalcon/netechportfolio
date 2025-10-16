@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+
+import emailjs from '@emailjs/browser';
 import {
   Mail,
   Instagram,
@@ -13,6 +15,11 @@ import "./NetechPortfolio.css";
 export default function NetechPortfolio() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const form = useRef();
+
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -20,6 +27,34 @@ export default function NetechPortfolio() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+    const handleEmailSend = (e) => {
+    e.preventDefault();
+    
+    const serviceID = import.meta.env.VITE_SERVICE_ID // Replace with your EmailJS service ID
+    const templateID =  import.meta.env.VITE_TEMPLATE_ID // Replace with your EmailJS template ID
+    const publicKey = import.meta.env.VITE_PUBLIC_KEY // Replace with your EmailJS user ID
+
+    console.log("public key ----", publicKey, serviceID, templateID)
+
+    const templateParams = {
+      from_name: name,
+      from_email: email,
+      to_name: 'Netech',
+      message: message,
+    };
+
+    emailjs.send(serviceID, templateID, templateParams, publicKey)
+      .then((response) => {
+        console.log('SUCCESS!', response.status, response.text);
+        alert('Message sent successfully!');
+        setName("");
+        setEmail("");
+        setMessage("");
+      }, (err) => {
+        console.log('FAILED...', err);
+        alert('Failed to send message. Please try again later.');
+      });
+  }
   const handleNavClick = (e, id) => {
     e.preventDefault();
     const el = document.getElementById(id);
@@ -139,10 +174,10 @@ export default function NetechPortfolio() {
               </div>
             </div>
 
-            <form className="contact-form" onSubmit={(e) => { e.preventDefault(); alert('Message sent! Replace with backend integration.'); }}>
-              <input placeholder="Your name" required />
-              <input type="email" placeholder="Your email" required />
-              <textarea placeholder="Brief message" required></textarea>
+            <form className="contact-form" onSubmit={handleEmailSend} >
+              <input placeholder="Your name" required value={name} onChange={(e)=> setName(e.target.value) } />
+              <input type="email" placeholder="Your email" required  value={email} onChange={(e)=> setEmail(e.target.value)}/>
+              <textarea placeholder="Brief message" required value={message} onChange={(e)=> setMessage(e.target.value)}></textarea>
               <button type="submit">Send</button>
             </form>
           </div>
