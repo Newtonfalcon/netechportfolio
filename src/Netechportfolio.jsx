@@ -18,6 +18,7 @@ export default function NetechPortfolio() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
   const form = useRef();
 
 
@@ -29,12 +30,12 @@ export default function NetechPortfolio() {
 
     const handleEmailSend = (e) => {
     e.preventDefault();
-    
+    setLoading(true);
     const serviceID = import.meta.env.VITE_SERVICE_ID // Replace with your EmailJS service ID
     const templateID =  import.meta.env.VITE_TEMPLATE_ID // Replace with your EmailJS template ID
     const publicKey = import.meta.env.VITE_PUBLIC_KEY // Replace with your EmailJS user ID
 
-    console.log("public key ----", publicKey, serviceID, templateID)
+    
 
     const templateParams = {
       from_name: name,
@@ -50,9 +51,11 @@ export default function NetechPortfolio() {
         setName("");
         setEmail("");
         setMessage("");
+        setLoading(false)
       }, (err) => {
         console.log('FAILED...', err);
         alert('Failed to send message. Please try again later.');
+        setLoading(false)
       });
   }
   const handleNavClick = (e, id) => {
@@ -178,7 +181,7 @@ export default function NetechPortfolio() {
               <input placeholder="Your name" required value={name} onChange={(e)=> setName(e.target.value) } />
               <input type="email" placeholder="Your email" required  value={email} onChange={(e)=> setEmail(e.target.value)}/>
               <textarea placeholder="Brief message" required value={message} onChange={(e)=> setMessage(e.target.value)}></textarea>
-              <button type="submit">Send</button>
+              <button type="submit">{loading?"sending...":"send"}</button>
             </form>
           </div>
         </section>
